@@ -4,11 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -17,11 +19,18 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
  * directory.
  */
 public class Robot extends TimedRobot {
+  private final int axis_sideToSide = 0;
+  private final int axis_forwardBack = 1;
+  private final int axis_rotate = 2;
+  private final int axis_throttle = 3;
   private final PWMSparkMax m_leftDrive = new PWMSparkMax(0);
   private final PWMSparkMax m_rightDrive = new PWMSparkMax(1);
   private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftDrive, m_rightDrive);
-  private final Joystick m_stick = new Joystick(0);
+  private final GenericHID m_controller = new Joystick(0);
   private final Timer m_timer = new Timer();
+  private final JoystickButton m_boostButton = new JoystickButton(m_controller, 1);
+  private final JoystickButton m_spinLeftButton = new JoystickButton(m_controller, 3);
+  private final JoystickButton m_spinRightButton = new JoystickButton(m_controller, 4);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -55,12 +64,31 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters teleoperated mode. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+  }
 
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getX());
+    double driveFactor = 
+      (m_controller.getRawAxis(axis_throttle) // will be -1 to 1
+      * -1 // reverse (forward is faster)
+      + 1) // 0 to 2
+      / 2; // 0 to 1
+
+    if (m_spinRightButton.get()) {
+      m_robotDrive.arcadeDrive(0, 1);
+    } else if (m_spinLeftButton.get()) {
+      m_robotDrive.arcadeDrive(0, -1);
+    } else {
+
+      if (m_boostButton.get()) {
+        driveFactor = 1;
+      }
+
+      m_robotDrive.arcadeDrive(m_controller.getRawAxis(axis_forwardBack) * driveFactor, m_controller.getRawAxis(axis_rotate) * 0.5);
+    }
+
   }
 
   /** This function is called once each time the robot enters test mode. */
