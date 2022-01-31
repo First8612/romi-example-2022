@@ -1,12 +1,10 @@
 # Robot for 2022!
 
-Welcome to our super awesome 2022 robot code repository. We dont know what the robot does yet - but it probably drives. This was just started from the WPILib's "Getting Started" template.
-
 ## FAQs
 
 ### What is this?
 
-This is the git repository for the 2022 robot program. It will have the code, as well as what is needed to build (turn the english-y language into computer language) and deploy to the robot. It would be really good to keep helpful documents like this one as well for us to reference later.
+This is the git repository with code for a 2022 romi example. 
 
 ### What programming language are we using?
 
